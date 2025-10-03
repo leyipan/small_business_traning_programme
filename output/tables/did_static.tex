@@ -1,0 +1,20 @@
+\begin{table}
+\centering
+\begin{talltblr}[         %% tabularray outer open
+entry=none,label=none,
+note{}={+ p \num{< 0.1}, * p \num{< 0.05}, ** p \num{< 0.01}, *** p \num{< 0.001}},
+]                     %% tabularray outer close
+{                     %% tabularray inner open
+colspec={Q[]Q[]Q[]},
+column{2-3}={}{halign=c,},
+column{1}={}{halign=l,},
+hline{4}={1-3}{solid, black, 0.05em},
+}                     %% tabularray inner close
+\toprule
+& Levels & Log(1+Y) \\ \midrule %% TinyTableHeader
+adopt\_t & \num{905.417}*** & \num{0.217}*** \\
+& (\num{157.772}) & (\num{0.018}) \\
+Num.Obs. & \num{54500} & \num{54500} \\
+\bottomrule
+\end{talltblr}
+\end{table}

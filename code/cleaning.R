@@ -7,10 +7,12 @@ library(here)
 library(janitor)
 library(lubridate)
 library(purrr)
+library(fixest)
+library(modelsummary)
 
 # Set file paths ----------------------------------------------------------
 
-## For data inputs
+## For input files in data
 in_file <- function(filename) {
   here("data", filename)
 }
@@ -19,6 +21,7 @@ in_file <- function(filename) {
 out_file <- function(filename) {
   here("output", filename)
 }
+
 
 # Read data and print skim summaries -----------------------------------
 
@@ -39,7 +42,7 @@ monthly_paths <- list.files(here("data/monthly_data"), pattern = "\\.csv$", full
 
 read_monthly <- function(fp) {
   nm <- basename(fp)
-  # Extract YYYY and M(M) from filename like "2014_7.csv" or "2014-07.csv"
+  # Extract year and month from filename
   m <- str_match(nm, "(\\d{4})[-_](\\d{1,2})")
   month_from_file <- if (!any(is.na(m[1, 2:3]))) {
     make_date(as.integer(m[1, 2]), as.integer(m[1, 3]), 1)
@@ -47,6 +50,7 @@ read_monthly <- function(fp) {
     as.Date(NA)
   }
   
+  # Read the columns
   read_csv(
     fp,
     col_types = cols(
@@ -59,15 +63,15 @@ read_monthly <- function(fp) {
     ),
     show_col_types = FALSE
   ) %>%
-    clean_names() %>% # ensure snake-case column names
+    clean_names() %>% 
     mutate(
-      # prefer month from 'date'; if date is NA, fall back to filename month
+      # infer month from 'date'; if date is NA, fall back to filename month
       month = coalesce(floor_date(date, "month"), month_from_file)
     )
 }
 
 ## Read monthly data into one data frame
-monthly <- map_dfr(monthly_paths, read_monthly) # save to monthly data frame
+monthly <- map_dfr(monthly_paths, read_monthly)
 
 ## Skim monthly data
 skim(monthly)
@@ -77,14 +81,14 @@ dir.create("output/diagnostics", recursive = TRUE, showWarnings = FALSE)
 diagno <- file.path("output/diagnostics",
                      paste0("skim_summaries_", Sys.Date(), ".txt"))
 
-options(width = 120)  # wider lines so tables don’t wrap oddly
+options(width = 120)
 sink(diagno)
 cat("Skim summaries\nGenerated: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n", sep = "")
 
 print_section <- function(title, x) {
   bar <- paste(rep("=", nchar(title)), collapse = "")
   cat(bar, "\n", title, "\n", bar, "\n\n", sep = "")
-  print(skim(x))     # use print() to ensure the skim print method is used
+  print(skim(x))
   cat("\n\n")
 }
 
@@ -94,6 +98,7 @@ print_section("FIRM AUXILIARY DATA BY MONTH", monthly)
 
 sink()
 message("Saved to: ", diagno)
+
 
 
 
@@ -125,17 +130,23 @@ skim(trimmed_id) # ensure that all values are of length 7 now
 ## Check if trimmed_id is in ids_firms
 anti_join(trimmed_id, ids_firms, by = "firm_id") # if 0 then yes
 
+
 ## Now trim the 2 railing 0s in the firm_id column in sales
 sales$firm_id <- sub("0{2}$", "", trimws(sales$firm_id))
+
 ## Sanity check
-length(unique(sales$firm_id))
-identical(unique(sales$firm_id), unique(firms$firm_id))
+length(unique(sales$firm_id))   # should be 498
+identical(unique(sales$firm_id), unique(firms$firm_id)) # should be TRUE
+
 
 ## Do the same for monthly
 monthly$firm_id <- sub("0{2}$", "", trimws(monthly$firm_id))
+
 ## Sanity check
-length(unique(monthly$firm_id))
-setequal(unique(monthly$firm_id), unique(firms$firm_id)) # check set since sequence is different
+length(unique(monthly$firm_id))  # should be 498
+# check set since sequence is different
+setequal(unique(monthly$firm_id), unique(firms$firm_id)) # should be TRUE
+
 
 
 # 2. Resolve missing values -------------------------------------------------------
@@ -223,6 +234,7 @@ na_prepost
 # leave them as NA in baseline, check later
 
 
+
 # 3. Check (firm_id, month) uniqueness ------------------------------------
 # Since sales should give firm sales by month, there should be unique firm-month values.
 # Standardise date to month to check for inconsistencies.
@@ -237,6 +249,7 @@ nrow(monthly %>% count(firm_id, month) %>% filter(n>1)) # should be 0 if unique
 dup_keys <- monthly %>%
   count(firm_id, month, name = "n") %>%
   filter(n > 1)
+
 
 # 4. Resolve monthly duplicates -------------------------------------------
 
@@ -289,6 +302,7 @@ nrow(monthly_resolved %>% count(firm_id, month) %>% filter(n > 1)) == 0  # uniqu
 all(monthly_resolved$adopt_t %in% c(0, 1, NA))                           # adopt_t is 0/1/NA
 
 
+
 # 5. Adoption validity checks ---------------------------------------------
 
 # 1) Enforce monotonicity within firm (once 1, stays 1)
@@ -322,6 +336,7 @@ monthly_resolved %>%
   nrow()   # should be 0
 
 
+
 # 6. Build a clean analysis panel -----------------------------------------
 
 # 1) Keep only what we need from each table
@@ -339,8 +354,99 @@ analysis_df <- sales_keep %>%
 ## Post-join row count should equal sales rows (one per firm-month)
 nrow(analysis_df) == nrow(sales_keep)
 
-## Match rate: what share of sales rows found monthly info?
-mean(!is.na(analysis_df$adopt_t))   # e.g., 0.96 = 96% matched
+skim(analysis_df)
+
+# since sales_t has a higher complete_rate than revenue_t
+# we'll use sales_t as baseline outcome measure
+
+# 3) Keep only firm–months with sales observed (outcome available)
+analysis_df <- analysis_df %>%
+  filter(!is.na(sales_t))
+
+# 4) Treatment timing overview
+## Count treated vs never-treated firms
+treat_overview <- analysis_df %>%
+  group_by(firm_id) %>%
+  summarise(ever_adopt = any(adopt_t == 1, na.rm = TRUE),
+            first_adopt = suppressWarnings(min(first_adopt, na.rm = TRUE)),
+            .groups="drop")
+
+treat_overview %>%
+  summarise(
+    n_firms = n(),
+    n_treated = sum(ever_adopt),
+    n_never   = sum(!ever_adopt),
+    share_treated = mean(ever_adopt)
+  )
+
+## Adoption calendar (how adoption spreads over time)
+adopt_calendar <- treat_overview %>%
+  filter(ever_adopt) %>%
+  count(first_adopt, name = "n_firms") %>%
+  arrange(first_adopt)
+
+adopt_calendar
 
 
-## Date cadence and coverage
+# 7. Baseline Analysis ----------------------------------------------------
+# 1) Two-way FE DiD (static effect) ---------------------------------------
+## Prepare panel
+panel <- analysis_df %>%
+  mutate(
+    ym = as.integer((year(month) - 2010) * 12 + month(month)),   # 2010-01 -> 1
+    first_treat = ifelse(is.na(first_adopt), NA_integer_,
+                         as.integer((year(first_adopt) - 2010) * 12 + month(first_adopt)))
+  )
+
+## Static DiD
+did_static <- feols(
+  sales_t ~ adopt_t | firm_id + factor(ym),
+  data = panel, cluster = ~ firm_id
+)
+
+## Log outcome robustness
+did_static_log <- feols(
+  log1p(sales_t) ~ adopt_t | firm_id + factor(ym),
+  data = panel, cluster = ~ firm_id
+)
+
+# View estimates in the console
+etable(did_static, did_static_log)
+
+dir.create("output/tables", recursive = TRUE, showWarnings = FALSE)
+modelsummary(
+  list("Levels" = did_static, "Log(1+Y)" = did_static_log),
+  fmt = 3, stars = TRUE,
+  gof_map = c("nobs","r.squared.within"),
+  output = "output/tables/did_static.tex"
+)
+
+# 2) Sun-Abraham Event Study (dynamic effects) ----------------------------
+
+# Change NA to positive infinity so that feols doesn't report error
+panel <- panel %>%
+  mutate(first_treat = ifelse(is.na(first_treat), Inf, first_treat))
+
+es_sa <- feols(
+  sales_t ~ sunab(first_treat, ym, ref.p = -1) |
+    firm_id + factor(ym),
+  data = panel, cluster = ~ firm_id
+)
+
+# Plot with reference event set to -1 (one month before adoption)
+png("output/figures/es_sales_baseline.png", width = 900, height = 600)
+
+fixest::iplot(
+  es_sa,
+  ref = -1,                       # <- correct name
+  main = "Event study: sales_t",
+  xlab = "Months relative to first adoption",
+  ylab = "Effect on sales (level)"
+)
+
+dev.off()
+
+# Aggregate an "average post-treatment" effect across lags
+post_avg <- agg(es_sa, "post")
+etable(post_avg)
+etable(post_avg, export = "output/tables/sa_post_agg.tex")
