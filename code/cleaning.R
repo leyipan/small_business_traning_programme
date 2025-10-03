@@ -1,0 +1,346 @@
+# Load required packages
+library(readr)
+library(tidyverse)
+library(skimr)
+library(stringr)
+library(here)
+library(janitor)
+library(lubridate)
+library(purrr)
+
+# Set file paths ----------------------------------------------------------
+
+## For data inputs
+in_file <- function(filename) {
+  here("data", filename)
+}
+
+## For output files
+out_file <- function(filename) {
+  here("output", filename)
+}
+
+# Read data and print skim summaries -----------------------------------
+
+## Read core data
+firms <- read_csv(in_file("firm_information.csv"))
+sales <- read_csv(in_file("aggregate_firm_sales.csv"))
+
+## Skim core data
+skim(firms)
+skim(sales)
+
+## Create a month column in sales
+sales <- sales %>%
+  mutate(month = floor_date(date, unit = "month"))
+
+## Set path to monthly data
+monthly_paths <- list.files(here("data/monthly_data"), pattern = "\\.csv$", full.names = TRUE)
+
+read_monthly <- function(fp) {
+  nm <- basename(fp)
+  # Extract YYYY and M(M) from filename like "2014_7.csv" or "2014-07.csv"
+  m <- str_match(nm, "(\\d{4})[-_](\\d{1,2})")
+  month_from_file <- if (!any(is.na(m[1, 2:3]))) {
+    make_date(as.integer(m[1, 2]), as.integer(m[1, 3]), 1)
+  } else {
+    as.Date(NA)
+  }
+  
+  read_csv(
+    fp,
+    col_types = cols(
+      date         = col_date(),
+      firm_id      = col_character(),
+      employment_t = col_double(),
+      wage_bill_t  = col_double(),
+      revenue_t    = col_double(),
+      adopt_t      = col_double()
+    ),
+    show_col_types = FALSE
+  ) %>%
+    clean_names() %>% # ensure snake-case column names
+    mutate(
+      # prefer month from 'date'; if date is NA, fall back to filename month
+      month = coalesce(floor_date(date, "month"), month_from_file)
+    )
+}
+
+## Read monthly data into one data frame
+monthly <- map_dfr(monthly_paths, read_monthly) # save to monthly data frame
+
+## Skim monthly data
+skim(monthly)
+
+## Print skim summaries for easier reference
+dir.create("output/diagnostics", recursive = TRUE, showWarnings = FALSE)
+diagno <- file.path("output/diagnostics",
+                     paste0("skim_summaries_", Sys.Date(), ".txt"))
+
+options(width = 120)  # wider lines so tables don’t wrap oddly
+sink(diagno)
+cat("Skim summaries\nGenerated: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n", sep = "")
+
+print_section <- function(title, x) {
+  bar <- paste(rep("=", nchar(title)), collapse = "")
+  cat(bar, "\n", title, "\n", bar, "\n\n", sep = "")
+  print(skim(x))     # use print() to ensure the skim print method is used
+  cat("\n\n")
+}
+
+print_section("FIRM INFORMATION", firms)
+print_section("AGGREGATE FIRM SALES", sales)
+print_section("FIRM AUXILIARY DATA BY MONTH", monthly)
+
+sink()
+message("Saved to: ", diagno)
+
+
+
+# 1. Extra IDs in Sales and Monthly --------------------------------------------------
+# Supposedly firms, sales and monthly will have identical firm_ids.
+# But from the skim summary sales and monthly have 988 unique firm_id values, while firms has 498.
+# There are also firm ids of length 8 or 9 in sales and monthly, while in firms all ids have length 7.
+# This section investigates why there is a difference.
+
+## Focus on sales and firms first
+## Take distinct firm ids out of firms and sales for inspection
+ids_firms <- firms %>% distinct(firm_id)
+ids_sales <- sales %>% distinct(firm_id)
+
+## Single out abnormal firm ids in sales where number of characters is more than 7
+abnorm_id <- ids_sales %>% filter(nchar(firm_id) > 7)
+nrow(abnorm_id) # check if it equates to the difference of 490
+
+## After inspection, seems like there are extra 0s appended to the extra firm_ids in sales
+## Check how many ends in "00" -- if equates to 490 then applies to all extras
+nrow(abnorm_id %>% filter(str_ends(firm_id, "00")))
+
+## Trim 2 trailing 0s
+trimmed_id <- abnorm_id %>%
+  mutate(firm_id = if_else(is.na(firm_id), NA_character_,
+                           str_replace(str_trim(firm_id), "00$", "")))
+skim(trimmed_id) # ensure that all values are of length 7 now
+
+## Check if trimmed_id is in ids_firms
+anti_join(trimmed_id, ids_firms, by = "firm_id") # if 0 then yes
+
+## Now trim the 2 railing 0s in the firm_id column in sales
+sales$firm_id <- sub("0{2}$", "", trimws(sales$firm_id))
+## Sanity check
+length(unique(sales$firm_id))
+identical(unique(sales$firm_id), unique(firms$firm_id))
+
+## Do the same for monthly
+monthly$firm_id <- sub("0{2}$", "", trimws(monthly$firm_id))
+## Sanity check
+length(unique(monthly$firm_id))
+setequal(unique(monthly$firm_id), unique(firms$firm_id)) # check set since sequence is different
+
+
+# 2. Resolve missing values -------------------------------------------------------
+
+# In core files:
+# Skim summary shows missing values for sales_t.
+
+## Check for na, 0 and negative values (since sales can't go negative)
+sales %>%
+  summarise(
+    n_rows = n(),
+    n_na   = sum(is.na(sales_t)), # check for na
+    n_zero = sum(sales_t == 0, na.rm = TRUE), # check for 0
+    n_neg  = sum(sales_t < 0,  na.rm = TRUE) # check for negative
+  )
+
+## Check for gaps or odd months
+range(sales$month)
+
+## When do NAs occur?
+na_by_month <- sales %>%
+  group_by(month) %>%
+  summarise(pct_na = 100 * mean(is.na(sales_t)), .groups = "drop") %>%
+  arrange(month)
+
+head(na_by_month); tail(na_by_month)
+
+## Who has NAs?
+na_by_firm <- sales %>%
+  group_by(firm_id) %>%
+  summarise(pct_na = 100 * mean(is.na(sales_t)), .groups = "drop") %>%
+  arrange(desc(pct_na))
+
+head(na_by_firm); tail(na_by_firm)
+
+# Are NAs interior gaps or just at the edges? (streak type)
+
+na_runs <- sales %>%
+  arrange(firm_id, month) %>%                    
+  group_by(firm_id) %>%                           
+  mutate(
+    is_na  = is.na(sales_t),                      # flag NA rows
+    # create a run ID: increments whenever the NA/non-NA status flips.
+    # Example per firm: F F F T T F  -> run_id: 0 0 0 1 1 2 (any monotone increasing is fine)
+    run_id = cumsum(is_na != dplyr::lag(is_na, default = first(is_na))),
+    first_m = first(month),                       # first observed month for this firm
+    last_m  = last(month)                         # last observed month for this firm
+  ) %>%
+  group_by(firm_id, run_id) %>%                   # now each consecutive run is one group
+  summarise(
+    is_na  = first(is_na),                        # this run is NA (TRUE) or not (FALSE)
+    start  = first(month),                        # run start month
+    end    = last(month),                         # run end month
+    len    = n(),                                 # run length in months
+    first_m = first(first_m),                     # carry firm’s first month
+    last_m  = first(last_m),                      # carry firm’s last month
+    .groups = "drop"
+  ) %>%
+  filter(is_na) %>%                               # keep only the NA runs
+  group_by(firm_id) %>%                           # summarise per firm
+  summarise(
+    longest_na_run = max(len),                    # longest consecutive NA stretch for the firm
+    # interior NA? (i.e., an NA run that is strictly between the first and last months)
+    has_interior_na = any(start > first_m & end < last_m),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(longest_na_run))                   # list firms with the longest NA streaks first, might be too sparse for baseline
+
+head(na_runs); tail(na_runs)
+
+# Are NAs concentrated pre/post 2013-01?
+na_prepost <- sales %>%
+  mutate(period = if_else(month < as.Date("2013-01-01"),
+                          "pre2013", "post2013")) %>%   # tag each row as pre or post 2013-01
+  group_by(period) %>%                                  # split data into the two periods
+  summarise(pct_na = 100 * mean(is.na(sales_t)),
+            .groups = "drop") %>%                       # within each period, percent of rows with NA sales_t
+  arrange(period)                                       # print in period order
+
+na_prepost
+
+
+# In monthly:
+# skim(monthly) shows missing values in employment_t, wage_bill_t, and revenue_t
+# leave them as NA in baseline, check later
+
+
+# 3. Check (firm_id, month) uniqueness ------------------------------------
+# Since sales should give firm sales by month, there should be unique firm-month values.
+# Standardise date to month to check for inconsistencies.
+
+## Check that (firm_id, month) is unique in sales
+nrow(sales %>% count(firm_id, month) %>% filter(n > 1)) # should be 0 if unique
+
+## Check that (firm_id, month) is unique in monthly
+nrow(monthly %>% count(firm_id, month) %>% filter(n>1)) # should be 0 if unique
+
+## Check out (firm_id, month) duplicates in monthly
+dup_keys <- monthly %>%
+  count(firm_id, month, name = "n") %>%
+  filter(n > 1)
+
+# 4. Resolve monthly duplicates -------------------------------------------
+
+# --- 1) Inspect whether duplicates are identical or conflicting ---
+conflicts <- monthly %>%
+  semi_join(dup_keys, by = c("firm_id","month")) %>%         # keep only the duplicated keys
+  group_by(firm_id, month) %>%
+  summarise(
+    n_rows = n(),
+    # how many distinct values (ignoring NA) per variable inside the key
+    emp_n  = n_distinct(employment_t, na.rm = TRUE),
+    wb_n   = n_distinct(wage_bill_t,  na.rm = TRUE),
+    rev_n  = n_distinct(revenue_t,    na.rm = TRUE),
+    adp_n  = n_distinct(adopt_t,      na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  # keep only keys where any variable truly disagrees
+  filter(emp_n > 1 | wb_n > 1 | rev_n > 1 | adp_n > 1)
+
+nrow(conflicts)        # how many of those truly disagree (the rest are identical rows)
+skim(conflicts)
+
+# helper: last non-NA
+last_non_na <- function(x) {
+  x2 <- x[!is.na(x)]               # keep only non-missing values
+  if (length(x2)) x2[length(x2)]   # if any remain, return the last one
+  else NA_real_
+}
+
+# --- 2) Build a resolved monthly table with one row per (firm_id, month) ---
+monthly_resolved <- monthly %>%
+  arrange(firm_id, month, date) %>%                        # order inside month
+  group_by(firm_id, month) %>%
+  summarise(
+    employment_t = last_non_na(employment_t),              # stock at period end
+    wage_bill_t  = max(wage_bill_t),                       # take the max (bill can only increase)
+    revenue_t    = max(revenue_t),         
+    adopt_t      = max(adopt_t, na.rm = TRUE),             # status: once 1 then 1
+    .groups = "drop"
+  ) %>%
+  # max() over all-NA returns -Inf; revert to NA in that rare case
+  mutate(adopt_t = ifelse(is.infinite(adopt_t), NA_real_, adopt_t))
+
+# --- 3) For the subset that had no conflicts, we could have just deduped; 
+# From nrow(conflicts) above we see that there are no identical duplicates,
+# thus we do not need to consider this subset.
+
+# --- 4) Sanity checks: uniqueness and valid values ---
+nrow(monthly_resolved %>% count(firm_id, month) %>% filter(n > 1)) == 0  # unique keys now
+all(monthly_resolved$adopt_t %in% c(0, 1, NA))                           # adopt_t is 0/1/NA
+
+
+# 5. Adoption validity checks ---------------------------------------------
+
+# 1) Enforce monotonicity within firm (once 1, stays 1)
+monthly_resolved <- monthly_resolved %>%
+  arrange(firm_id, month) %>%
+  group_by(firm_id) %>%
+  mutate(adopt_cum = cummax(adopt_t)) %>%   # 0/1 running max; NAs treated as 0 for cummax
+  ungroup()
+
+# 2) First adoption month per firm (NA if never adopts)
+first_adopt <- monthly_resolved %>%
+  group_by(firm_id) %>%
+  summarise(first_adopt = if (any(adopt_cum == 1)) min(month[adopt_cum == 1], na.rm = TRUE) else as.Date(NA),
+            .groups = "drop")
+
+# 3) Merge back and build event-time variables
+monthly_resolved <- monthly_resolved %>%
+  left_join(first_adopt, by = "firm_id") %>%
+  mutate(
+    ever_adopt = !is.na(first_adopt),
+    rel_time   = as.integer((month - first_adopt) / 30),   # ~months relative to adoption; 0 at adoption month
+    post       = as.integer(month >= first_adopt)          # 1 if on/after adoption (NA for never-adopters)
+  )
+
+# any reversals left?
+monthly_resolved %>%
+  arrange(firm_id, month) %>%
+  group_by(firm_id) %>%
+  mutate(lag_adopt = lag(adopt_t)) %>%
+  filter(lag_adopt == 1 & adopt_t == 0) %>%
+  nrow()   # should be 0
+
+
+# 6. Build a clean analysis panel -----------------------------------------
+
+# 1) Keep only what we need from each table
+sales_keep   <- sales %>% select(firm_id, month, sales_t)
+monthly_keep <- monthly_resolved %>%
+  select(firm_id, month, employment_t, wage_bill_t, revenue_t, adopt_t, ever_adopt, first_adopt, rel_time, post)
+firms_keep   <- firms %>% select(firm_id, firm_name, firm_sector)
+
+# 2) Join: sales (outcome) ⟂ monthly (treatment/controls) ⟂ firms (labels)
+analysis_df <- sales_keep %>%
+  left_join(monthly_keep, by = c("firm_id","month")) %>%   # keep the outcome universe
+  left_join(firms_keep,   by = "firm_id")
+
+# Checks
+## Post-join row count should equal sales rows (one per firm-month)
+nrow(analysis_df) == nrow(sales_keep)
+
+## Match rate: what share of sales rows found monthly info?
+mean(!is.na(analysis_df$adopt_t))   # e.g., 0.96 = 96% matched
+
+
+## Date cadence and coverage

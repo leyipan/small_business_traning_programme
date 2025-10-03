@@ -1,0 +1,90 @@
+Skim summaries
+Generated: 2025-10-03 04:53:14 BST
+
+================
+FIRM INFORMATION
+================
+
+── Data Summary ────────────────────────
+                           Values
+Name                       x     
+Number of rows             498   
+Number of columns          3     
+_______________________          
+Column type frequency:           
+  character                3     
+________________________         
+Group variables            None  
+
+── Variable type: character ────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate min max empty n_unique whitespace
+1 firm_id               0             1   7   7     0      498          0
+2 firm_name             0             1   2  44     0      498          0
+3 firm_sector           0             1   6  11     0        3          0
+
+
+====================
+AGGREGATE FIRM SALES
+====================
+
+── Data Summary ────────────────────────
+                           Values
+Name                       x     
+Number of rows             56646 
+Number of columns          4     
+_______________________          
+Column type frequency:           
+  character                1     
+  Date                     2     
+  numeric                  1     
+________________________         
+Group variables            None  
+
+── Variable type: character ────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate min max empty n_unique whitespace
+1 firm_id               0             1   7   9     0      988          0
+
+── Variable type: Date ─────────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate min        max        median     n_unique
+1 date                  0             1 2010-01-01 2019-12-30 2015-01-01     3532
+2 month                 0             1 2010-01-01 2019-12-01 2015-01-01      120
+
+── Variable type: numeric ──────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate  mean    sd  p0  p25  p50   p75  p100 hist 
+1 sales_t            2100         0.963 8633. 5276. 504 4266 7978 12003 45973 ▇▅▁▁▁
+
+
+============================
+FIRM AUXILIARY DATA BY MONTH
+============================
+
+── Data Summary ────────────────────────
+                           Values
+Name                       x     
+Number of rows             56646 
+Number of columns          7     
+_______________________          
+Column type frequency:           
+  character                1     
+  Date                     2     
+  numeric                  4     
+________________________         
+Group variables            None  
+
+── Variable type: character ────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate min max empty n_unique whitespace
+1 firm_id               0             1   7   9     0      988          0
+
+── Variable type: Date ─────────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate min        max        median     n_unique
+1 date               2708         0.952 2010-01-01 2019-12-30 2014-12-29     3532
+2 month                 0         1     2010-01-01 2019-12-01 2015-01-01      120
+
+── Variable type: numeric ──────────────────────────────────────────────────────────────────────────────────────────────
+  skim_variable n_missing complete_rate       mean         sd    p0     p25     p50     p75     p100 hist 
+1 employment_t       2105         0.963     95.6       39.1     20      63      96     128      203  ▆▇▇▆▁
+2 wage_bill_t        2091         0.963  31571.     17074.    1948.  17988.  29435.  42844.  153051. ▇▆▁▁▁
+3 revenue_t          2126         0.962 673376.    606777.    8159. 207371. 521136. 954817. 5876887. ▇▂▁▁▁
+4 adopt_t               0         1          0.255      0.436    0       0       0       1        1  ▇▁▁▁▃
+
+

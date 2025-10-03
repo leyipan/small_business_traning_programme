@@ -1,0 +1,499 @@
+firm_id,firm_name,firm_sector
+AAAI-15,Resorts International Holdings,Hospitality
+ABFM-90,Morrison Management Specialists,Hospitality
+ABZO-32,Erbert & Gerbert's,Fast Food
+ACWI-63,Five Below,Retail
+ADAY-83,e-mart,Retail
+AEOJ-42,Pyramid Hotel Group,Hospitality
+AGNI-54,CEX,Retail
+AGQV-46,Burger House,Hospitality
+AGZJ-96,Davidson,Hospitality
+AJHZ-77,PriceSmart,Retail
+AJMB-61,Americinn by Wyndham,Hospitality
+ALWP-80,Fred Perry,Retail
+ANGH-88,Joe's Crab Shack,Fast Food
+ANTI-83,Mr. Sub,Fast Food
+ANUA-91,Coast,Retail
+AOCF-99,Swarovski,Retail
+AOQS-19,Atrium Hospitality,Hospitality
+APQU-61,Margaritaville Resort Times Square,Hospitality
+AQXG-43,Jollibee,Fast Food
+ARNP-18,Card Factory,Retail
+ATFU-64,Taco del Mar,Fast Food
+AUWB-47,UGG,Retail
+AWQI-89,Timpson,Retail
+BBMC-11,AutoNation,Retail
+BETS-11,Hotto Motto,Fast Food
+BGNL-80,Little Houses Group,Hospitality
+BKTH-04,Spaghetti Warehouse,Fast Food
+BLZJ-60,Affinity Interactive,Hospitality
+BNEK-88,Boscov's,Retail
+BOAH-01,Cherokee Nation Businesses,Hospitality
+BORR-04,Homesense,Retail
+BPBH-11,Vans,Retail
+BQBX-87,Target Hospitality,Hospitality
+BRNM-67,Pizza Ranch,Fast Food
+BTOY-69,Ameristar Casinos,Hospitality
+BVND-31,Wyndham International,Hospitality
+BVRT-86,Lidl,Retail
+BVZX-93,Winchell's Donuts,Fast Food
+BWVK-94,Alberigo Hotel Management,Hospitality
+BXCG-45,Wilko,Retail
+BZAO-84,McDonald's,Fast Food
+BZOC-10,Maldron Hotels and Partners,Hospitality
+CCGI-58,Global Industrial Company,Retail
+CDIB-55,Otto,Retail
+CHSM-02,Montage Hotels & Resorts,Hospitality
+CJFP-77,Roy Rogers,Fast Food
+CLKS-21,Wolfgang's Steakhouse,Fast Food
+CNGK-74,Golden Goose,Retail
+COGZ-02,Choice Hotels,Hospitality
+CTKW-58,Qdoba,Fast Food
+CUCC-12,Tacombi,Hospitality
+CVSM-61,Five Guys,Fast Food
+CWVJ-79,Portillo's,Fast Food
+CXGP-45,The NoMad,Hospitality
+CXMB-63,Penske Automotive Group,Retail
+CZAZ-20,Marugame Seimen,Fast Food
+DALN-27,Albertsons,Retail
+DBJK-96,Poundland,Retail
+DGFH-17,Carrefour,Retail
+DGHU-53,Carpetright,Retail
+DHEN-55,Dunelm,Retail
+DJGP-25,Academy Sports and Outdoors,Retail
+DJLH-51,Primark,Retail
+DLLP-38,Farmfoods,Retail
+DNYC-17,Ralph Lauren,Retail
+DRHS-49,7-Eleven,Retail
+DSSL-68,Trinity Investments,Hospitality
+DTVV-40,Smashburger,Fast Food
+DUYT-54,Valentino's,Fast Food
+DVKY-33,Penguin Point,Fast Food
+DVOS-72,Hotels.com,Hospitality
+DWCT-33,The Ritz-Carlton Reynolds Lake Oconee,Hospitality
+DWRR-51,Standard Hotels,Hospitality
+DYAC-55,Orient Express,Hospitality
+EABV-83,Saint Louis Club,Hospitality
+EADB-29,GNC,Retail
+EALM-41,Duchess,Fast Food
+EFIJ-41,Joie de Vivre Hospitality,Hospitality
+EGEJ-42,KyoChon,Fast Food
+EIJS-05,Maison Privee,Hospitality
+EJHQ-70,Camelback Resort,Hospitality
+EKGB-30,Hotel Equities,Hospitality
+EKLL-99,Wingstop,Fast Food
+EMMR-82,Rosewood Schloss Fuschl,Hospitality
+EOIW-74,Partners Ii Pizza,Hospitality
+EPFE-78,Halfords,Retail
+EQXZ-18,Kelseys Original Roadhouse,Fast Food
+ESRT-15,HHM,Hospitality
+ETME-37,Fontainebleau Las Vegas,Hospitality
+ETWL-08,Peter Piper Pizza,Fast Food
+EVBZ-97,Titan Machinery,Retail
+EVIB-91,Marriott,Hospitality
+EXQK-17,Pita Pit,Fast Food
+EXZI-94,Swensen's,Fast Food
+EYPW-38,Missguided,Retail
+EZIB-95,The Human Bean,Fast Food
+FAZF-63,Church's Chicken,Fast Food
+FEFC-80,Camping World Holdings,Retail
+FEIE-56,F1 Arcade,Hospitality
+FGAR-76,McMenamins,Hospitality
+FGIX-57,ThredUp,Retail
+FHRD-18,Otalo.com,Hospitality
+FKAF-79,Dollar General,Retail
+FORU-75,Liberty,Retail
+FOZM-21,Lark Hotels,Hospitality
+FRJA-10,Auntie Anne's,Fast Food
+FRVM-45,CP All,Retail
+FSCQ-90,Nordsee,Fast Food
+FTIC-42,Sojo,Hospitality
+FURT-83,Green Burrito,Fast Food
+FVHQ-72,John Lewis,Retail
+FWNA-66,Waitrose,Retail
+FWSF-64,Riley Hotel Group,Hospitality
+FWXY-88,Claire's,Retail
+FYQD-98,Glacier Park,Hospitality
+FZLO-08,BBB Foods,Retail
+GADO-05,Pepper Lunch,Fast Food
+GAEQ-26,Avid Hotels,Hospitality
+GAHZ-36,Signia by Hilton,Hospitality
+GAWB-92,Pets at Home,Retail
+GBKF-37,BJ's Wholesale Club,Retail
+GBMI-21,First Kitchen,Fast Food
+GGGM-03,FatFace,Retail
+GGQL-80,ResortPass,Hospitality
+GHDP-86,Lee's Famous Recipe Chicken,Fast Food
+GHOU-19,Akia,Hospitality
+GIKU-22,Omni Mount Washington Resort,Hospitality
+GINQ-80,Mountain Warehouse,Retail
+GJGZ-66,Temple Square Hospitality,Hospitality
+GJTF-49,Lyle & Scott,Retail
+GKBW-36,Trump Entertainment Resorts,Hospitality
+GKIO-18,Warner Bros. Discovery Global Experiences,Hospitality
+GKKA-31,Hotel Commonwealth,Hospitality
+GNDC-01,Calvin Klein,Retail
+GNHW-68,Ernest Jones,Retail
+GORH-15,Wesfarmers,Retail
+GPEI-90,Drury Hotels,Hospitality
+GQNG-17,White Stuff,Retail
+GQTY-01,Noble House Hotels & Resorts,Hospitality
+GSPM-38,The Siegel Group,Hospitality
+GWCM-39,Rita's Italian Ice,Fast Food
+GWVB-84,Shoney's,Fast Food
+GXUL-07,Craghoppers,Retail
+HESF-31,Ingles Markets,Retail
+HEWB-45,Loews Hotels,Hospitality
+HJUU-82,Weis Markets,Retail
+HKYA-83,Le Pain Quotidien,Fast Food
+HLPO-48,Dollar Tree,Retail
+HLPW-01,Boot Barn Holdings,Retail
+HMHC-72,Guthrie's,Fast Food
+HMPF-83,The Greenspun,Hospitality
+HNRD-42,Italian Tomato,Fast Food
+HRBW-69,ASOS,Retail
+HSCY-26,Arby's,Fast Food
+HSFT-11,Black Desert Resort,Hospitality
+HTAK-79,InterContinental Jeddah,Hospitality
+HTJN-49,Women Leading Travel and Hospitality,Hospitality
+HTJY-48,Ahold Delhaize,Retail
+HUMW-75,Salamander Hotels & Resorts,Hospitality
+HVAU-63,Kohl's,Retail
+HYQS-89,Life House,Hospitality
+HZQK-54,Grup Confiteria,Hospitality
+HZWL-46,Extended Stay America,Hospitality
+IBPI-71,Mooyah,Fast Food
+IEVL-29,Sonic Automotive,Retail
+IFEF-82,Mrs. Winner's Chicken & Biscuits,Fast Food
+IFFS-46,The Pizza Company,Fast Food
+IGUI-59,Desires Hotels,Hospitality
+IHVQ-18,Jackson Hotel Management,Hospitality
+IJTA-78,Warby Parker,Retail
+ILGL-89,Coles Group,Retail
+IPLT-71,Clintons,Retail
+IQFC-40,Harrah's Entertainment,Hospitality
+IQIV-28,Asics,Retail
+IRMF-38,MOS Burger,Fast Food
+IRQR-89,Port of Subs,Fast Food
+ITZA-04,Joules,Retail
+IVNI-46,Arctic Circle,Fast Food
+IWEI-53,Hot 'n Now,Fast Food
+IWOZ-83,Harrods,Retail
+IXKO-13,Kroger,Retail
+IYNL-07,Tractor Supply Company,Retail
+IZDU-98,Disney Regional Entertainment,Hospitality
+IZOR-96,Loblaw Companies,Retail
+JHSO-64,EssilorLuxottica,Retail
+JIUP-65,Delaware North,Hospitality
+JOPU-74,Penn Station East Coast Subs,Fast Food
+JQQI-39,DFS,Retail
+JRGZ-90,TCBY,Fast Food
+JRHU-90,Operto,Hospitality
+JRLK-29,Shipley Do-Nuts,Fast Food
+JTOY-20,Freddy's Frozen Custard & Steakburgers,Fast Food
+JUJT-43,Mercadona,Retail
+JXVC-04,Berghaus,Retail
+JYDY-26,Essex Hotel Management,Hospitality
+JYWM-78,Bonchon Chicken,Fast Food
+KALY-35,New Balance,Retail
+KBGA-72,Shakey's Pizza,Fast Food
+KDES-16,Pretty Green,Retail
+KEJO-66,Tesco,Retail
+KGGV-64,Revolve Group,Retail
+KIZI-33,McDonald's South Africa,Hospitality
+KMBZ-40,CUSA,Hospitality
+KODA-55,Lafleur Restaurants,Fast Food
+KOEV-74,Best Buy,Retail
+KQPP-50,Caffe Bene,Fast Food
+KSMB-93,L'Occitane,Retail
+KTEW-16,Umami Burger,Fast Food
+KWMZ-65,Big Boy,Fast Food
+KXHI-31,Currys,Retail
+KYFQ-93,Nasty Gal,Retail
+KYSG-75,The Works,Retail
+LBEC-95,Original Tommy's,Fast Food
+LCTZ-25,PacSun,Retail
+LDJM-59,Argosy Gaming,Hospitality
+LFUM-85,American Eagle Outfitters,Retail
+LHNU-72,Kering,Retail
+LIYL-85,Saladworks,Fast Food
+LMGS-24,SnowRock,Retail
+LOBU-56,Blackwell's,Retail
+LODB-49,Turning Stone Enterprises,Hospitality
+LOQK-64,Braum's,Fast Food
+LRTJ-08,Bath & Body Works,Retail
+LSYK-81,Kimpton Hotels & Restaurants,Hospitality
+LTAB-25,Red Roof Inn,Hospitality
+LVBX-86,First Call Hospitality,Hospitality
+LVDK-80,White Castle,Fast Food
+LWIJ-39,Chicken Express,Fast Food
+LXWV-64,Country Style,Fast Food
+LYEF-67,Oasis,Retail
+LYNF-64,Destination by Hyatt,Hospitality
+LYUS-27,Daylight Donuts,Fast Food
+LZWI-14,Go Outdoors,Retail
+MCTR-78,Meijer,Retail
+MDOG-78,Fryer's,Fast Food
+MDRA-81,Hilton,Hospitality
+MEBS-32,MGM Resorts,Hospitality
+MEDP-91,Mint House,Hospitality
+MEGN-63,Co-op Food,Retail
+MEOY-61,Swensons,Fast Food
+MFDU-61,Olympia Hotel Management,Hospitality
+MLWV-90,E.Leclerc,Retail
+MMHO-10,Matsuya Foods Co.,Fast Food
+MNFL-47,Radisson Hotels,Hospitality
+MOEY-78,ScS,Retail
+MPFL-65,Canary Technologies,Hospitality
+MXNW-39,HE Butt Grocery,Retail
+MZOO-76,Sizzler,Fast Food
+NCXE-80,Carnival,Hospitality
+NFAU-40,Chipotle Mexican Grill,Fast Food
+NFJC-30,Advance Auto Parts,Retail
+NJSW-78,Charming Charlie,Retail
+NKZO-23,Manchu Wok,Fast Food
+NQZF-96,Topshop,Retail
+NWBO-08,Reliance Retail,Retail
+OAFJ-96,Schwarz Gruppe,Retail
+OAIM-40,TK Maxx,Retail
+OBYW-23,Morgans Hotel Group,Hospitality
+ODQT-37,Blacks,Retail
+ODRZ-44,Booster Juice,Fast Food
+OECA-49,Games Workshop,Retail
+OGLH-73,Wienerschnitzel,Fast Food
+OIMT-57,Sperry,Retail
+OMIK-95,Blank Street,Hospitality
+OMKH-11,Walmart,Retail
+OPCX-83,Mister Donut,Fast Food
+OPDL-53,Cheddar's Scratch Kitchen,Fast Food
+OPGD-07,Preferred Hotels & Resorts,Hospitality
+OSRD-02,Shein,Retail
+OTXW-09,Expotel Hospitality,Hospitality
+OUBG-42,FlipKey,Hospitality
+OXLY-02,Wetzel's Pretzels,Fast Food
+OZQZ-90,Jack Entertainment,Hospitality
+PBSA-98,Orange Julius,Fast Food
+PCPO-84,FEMSA,Retail
+PDDA-53,Columbia,Retail
+PDPO-66,Cannery Casino Resorts,Hospitality
+PEDD-76,Sweet Frog,Fast Food
+PEYO-65,Dairy Queen,Fast Food
+PFSS-39,Marks & Spencer,Retail
+PHHC-23,Pizza Hut,Fast Food
+PHKW-44,Alibaba Group,Retail
+PIAM-02,Tamares Group,Hospitality
+PIEM-37,TLC Casino Enterprises,Hospitality
+PIVE-12,Samsung Experience Store,Retail
+PMNS-87,Victoria's Secret,Retail
+PNCX-73,Charleys Philly Steaks,Fast Food
+PODV-25,Steak 'n Shake,Fast Food
+POQJ-85,Wrangler,Retail
+POUE-94,The Keg,Fast Food
+PPAL-24,Boot Barn,Retail
+PPSL-48,Buyers Edge Platform,Hospitality
+PQPI-14,Mr. Pizza,Fast Food
+PRIA-04,Burlington Stores,Retail
+PWQC-12,F.Hinds,Retail
+PWVT-37,Buckle,Retail
+PYLZ-99,Libra Group,Hospitality
+PZPX-44,Deichmann,Retail
+QBTW-41,I Saw It First,Retail
+QCTO-12,Coop Italia,Retail
+QDAN-47,Cath Kidston,Retail
+QDSW-67,Akso Health Group,Retail
+QEGW-70,Seven & I Holdings,Retail
+QFAR-96,Little Caesars,Fast Food
+QHSP-49,Circa Resort and Casino,Hospitality
+QIXA-60,Chewy,Retail
+QJFM-08,Pizza Nova,Fast Food
+QJNH-91,Fast Retailing,Retail
+QKTJ-39,Village Inn,Fast Food
+QKTU-96,Sarku Japan,Fast Food
+QPPK-34,GAME,Retail
+QQXH-56,Promus Hotel Corporation,Hospitality
+QRFD-54,Harrison Group Resort Hotels and Restaurants,Hospitality
+QSJO-47,Aperture Hotels,Hospitality
+QSYR-23,Long John Silver's,Fast Food
+RAQJ-49,Hobbycraft,Retail
+RASB-58,Fosters Freeze,Fast Food
+RBVP-90,The Children's Place,Retail
+RDQL-84,Starboard Hotels,Hospitality
+RFTN-84,Cook Out,Fast Food
+RHAU-95,Taco Time,Fast Food
+RIUQ-94,Nordstrom Rack,Retail
+RIXM-05,Argos,Retail
+RIZG-41,Runners Need,Retail
+RJCV-36,Speedway,Retail
+RJOS-92,Signet Jewelers,Retail
+RJQX-44,BoxLunch,Retail
+RJTQ-38,Cotswold Outdoor,Retail
+RKDJ-57,Four Seasons,Hospitality
+RLJD-78,Kokua Hospitality,Hospitality
+RMHH-90,MOD Pizza,Fast Food
+RNIA-54,Inditex,Retail
+RNOK-16,Odyssey Hotel Group,Hospitality
+RRNY-47,Super 8,Hospitality
+RSGJ-70,Valentine,Fast Food
+RUTU-89,Denihan Hospitality Group,Hospitality
+RWAJ-79,GrandVision,Retail
+RZWA-38,Guardian Pharmacy Services,Retail
+SAKJ-10,Bro Miami,Hospitality
+SALA-04,El Taco Tote,Fast Food
+SCFD-17,RH,Retail
+SDBI-09,LIZ Restobar,Hospitality
+SDWP-23,Cooprative U,Retail
+SEAL-78,Logan's Roadhouse,Fast Food
+SEIY-41,Trans World,Hospitality
+SGOF-18,Sally Beauty Holdings,Retail
+SHLH-28,Marshalls,Retail
+SHWR-64,Farmer Boys,Fast Food
+SHYJ-94,Aldo,Retail
+SIBR-55,Yogen Frz,Fast Food
+SINW-25,Circus Circus Las Vegas,Hospitality
+SJJR-16,Adventureland,Hospitality
+SKXL-29,Park Hotels & Resorts,Hospitality
+SLCR-52,BHC,Hospitality
+SLIE-34,Fleet Feet,Retail
+SMNJ-32,Taco Bueno,Fast Food
+SMVD-57,Gaylord Hotels,Hospitality
+SNVU-62,Journeys,Retail
+SQGZ-97,Jack Wills,Retail
+SQNQ-80,Artisans of Leisure,Hospitality
+SWPG-41,Gymboree,Retail
+SYSL-03,Vertu Motors,Retail
+SZFU-21,Amazon,Retail
+TBHP-06,California Pizza Kitchen,Fast Food
+TCHW-45,Einstein Bros. Bagels,Fast Food
+TDWL-27,TRYP by Wyndham,Hospitality
+TDXW-12,Togo's,Fast Food
+TELH-64,N9NE Group,Hospitality
+TETN-37,Dick's Sporting Goods,Retail
+TEZA-10,Hotel Engine,Hospitality
+TJDS-11,Beaverbrooks,Retail
+TJHX-18,Uniqlo,Retail
+TJJS-04,Sonoma County Tourism,Hospitality
+TJSB-44,GameStop,Retail
+TJUQ-97,Hot Topic,Retail
+TLMX-91,Sukiya,Fast Food
+TLYZ-97,Hungry Howie's Pizza,Fast Food
+TNUS-74,Shane Co.,Retail
+TOXY-65,Burgerville,Fast Food
+TQRN-83,Planet Smoothie,Fast Food
+TSDF-65,Puttshack,Hospitality
+TSWF-95,Zippy's,Fast Food
+TTAY-60,Herms,Retail
+TUFC-88,AS Watson Group,Retail
+TUFS-85,Papa Gino's,Fast Food
+TWPE-11,Boots,Retail
+TXIM-51,Seattle's Best Coffee,Fast Food
+TXSE-35,Macy's,Retail
+TZLK-74,Coffee Time,Fast Food
+UDBN-81,AllSaints,Retail
+UDUS-60,Reeco,Hospitality
+UEFF-77,Jack in the Box,Fast Food
+UGGZ-38,Daunt Books,Retail
+UHAL-62,Hidden Valley Resort,Hospitality
+UHBB-57,King's Seafood Company,Fast Food
+UIPR-83,Marriott International,Hospitality
+UKIU-96,Chicken Barn Barbados,Fast Food
+UNAQ-38,McNeill Hotel Company,Hospitality
+UNMI-03,OshKosh B'gosh,Retail
+UOKY-11,Barbour,Retail
+UPBP-69,Vipshop,Retail
+UQZD-44,Runza,Fast Food
+USNC-56,Crestline Hotels & Resorts,Hospitality
+UVCU-76,Harvey Nichols,Retail
+UVSA-32,The Hosteller,Hospitality
+UYOW-55,Panera Bread,Fast Food
+VASO-64,Spencer's,Retail
+VDHP-45,Taco John's,Fast Food
+VETZ-83,Williams-Sonoma,Retail
+VEUL-58,Karen Millen,Retail
+VEYZ-42,Auchan,Retail
+VHPJ-06,Pizza Pizza,Fast Food
+VIJG-33,Isle of Capri Casinos,Hospitality
+VIKU-98,Clarks,Retail
+VLLW-23,Phase Eight,Retail
+VMPM-07,Anthropologie,Retail
+VMWA-53,Godfather's Pizza,Fast Food
+VNJG-58,Ultrapar Participacoes,Retail
+VNZN-94,Angel-in-us,Fast Food
+VOSD-70,Wendy's,Fast Food
+VSJW-69,Joy,Retail
+VUPK-83,Nathan's Famous,Fast Food
+VVIB-50,Five Daughters Bakery,Fast Food
+VWNM-23,Ledo Pizza,Fast Food
+VXSX-59,Shoprite Holdings,Retail
+VXZB-66,Decathlon Group,Retail
+VYYP-48,Noodles & Company,Fast Food
+VZAV-94,ARK Hospitality,Hospitality
+WDET-53,Old Navy,Retail
+WDFO-91,Popeyes,Fast Food
+WDMT-99,PrettyLittleThing,Retail
+WGPZ-69,CoralTree Hospitality,Hospitality
+WHYV-05,Carvana,Retail
+WIVN-77,Accessorize,Retail
+WJWM-76,New York Fries,Fast Food
+WLNN-02,ItsaCheckmate,Hospitality
+WLVR-89,First Hospitality,Hospitality
+WMCK-39,Groupe ADEO,Retail
+WMTI-12,Bloomingdale's,Retail
+WMWF-81,Brighton,Retail
+WNBZ-51,Selfridges,Retail
+WNVE-65,Best Western,Hospitality
+WOXX-93,LVMH,Retail
+WPBP-97,Jet's Pizza,Fast Food
+WPTV-44,21c Museum Hotels,Hospitality
+WRWL-83,Chedraui,Retail
+WXII-45,Swingers,Hospitality
+XAKS-05,francesca's,Retail
+XAUH-52,Checkers,Fast Food
+XCMY-75,Omni Amelia Island Resort,Hospitality
+XEWX-67,Midas Hospitality,Hospitality
+XIEV-78,Ben Sherman,Retail
+XIOT-55,Metro AG,Retail
+XNTJ-63,San Vicente Bungalows,Hospitality
+XPOE-90,Rewe Group,Retail
+XPUF-28,In The Style,Retail
+XQNX-54,McKibbon Hospitality,Hospitality
+XSFF-37,Wm Morrison Supermarkets,Retail
+XTJI-86,Carino's Italian,Fast Food
+XVUQ-82,Koninklijke Ahold Delhaize,Retail
+XWSL-77,Nike,Retail
+XXXE-78,Tha Express,Fast Food
+YCLB-51,Service Properties Trust,Hospitality
+YCSX-66,IHOP,Fast Food
+YFBX-42,Kurt Geiger,Retail
+YFUR-19,Rosati's,Fast Food
+YKZB-96,Under Armour,Retail
+YLRP-69,Ollie's Bargain Outlet,Retail
+YMGP-06,ICA Gruppen,Retail
+YNIQ-52,Real hospitality Group,Hospitality
+YPCP-47,HostGPO,Hospitality
+YQMF-72,Johnny Rockets,Fast Food
+YQOM-70,Home Team Vacation Rentals,Hospitality
+YQUB-50,Foyles,Retail
+YTSP-23,Dom Pedro Lisboa Hotel,Hospitality
+YVZQ-62,Aldi,Retail
+YWAI-59,Tapi,Retail
+YZAI-44,Stir Crazy,Fast Food
+ZAEX-20,Factory Connection,Retail
+ZBVK-19,Twin Peaks,Fast Food
+ZFDG-93,Alimentation,Retail
+ZFLV-46,Taco Tico,Fast Food
+ZGKY-98,Alterra Mountain Company,Hospitality
+ZINA-59,Wayfair,Retail
+ZKER-40,Wynn Resorts,Hospitality
+ZLEM-33,King of Donair,Fast Food
+ZMPE-03,The Address Collective,Hospitality
+ZOWV-86,AKEN Hotels and Resorts,Hospitality
+ZPJS-12,Rush Enterprises,Retail
+ZPML-46,Groupon,Retail
+ZRHG-67,Menards,Retail
+ZSMN-14,WingStreet,Fast Food
+ZTKH-70,In-N-Out Burger,Fast Food
+ZUSZ-09,HOSTE,Hospitality
+ZUVM-90,Tous les Jours,Fast Food
+ZWWH-75,Urban Outfitters,Retail
+ZYYX-73,MTR Gaming Group,Hospitality
+ZZDH-05,Paris Baguette,Fast Food
