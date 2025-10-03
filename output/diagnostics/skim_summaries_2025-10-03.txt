@@ -1,6 +1,14 @@
-Skim summaries
-Generated: 2025-10-03 15:31:38 BST
 
+> cat("Skim summaries\nGenerated: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z"), "\n\n", sep = "")
+Skim summaries
+Generated: 2025-10-03 20:45:28 BST
+
+
+> print_section <- function(title, x) {
++   bar <- paste(rep("=", nchar(title)), collapse = "")
++   cat(bar, "\n", title, "\n", bar, "\n\n", sep = "") .... [TRUNCATED] 
+
+> print_section("FIRM INFORMATION", firms)
 ================
 FIRM INFORMATION
 ================
@@ -23,6 +31,8 @@ Group variables            None
 3 firm_sector           0             1   6  11     0        3          0
 
 
+
+> print_section("AGGREGATE FIRM SALES", sales)
 ====================
 AGGREGATE FIRM SALES
 ====================
@@ -54,6 +64,8 @@ Group variables            None
 1 sales_t            2100         0.963 8633. 5276. 504 4266 7978 12003 45973 ▇▅▁▁▁
 
 
+
+> print_section("FIRM AUXILIARY DATA BY MONTH", monthly)
 ============================
 FIRM AUXILIARY DATA BY MONTH
 ============================
@@ -88,3 +100,5 @@ Group variables            None
 4 adopt_t               0         1          0.255      0.436    0       0       0       1        1  ▇▁▁▁▃
 
 
+
+> sink()

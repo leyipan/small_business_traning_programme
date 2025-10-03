@@ -8,6 +8,7 @@ library(janitor)
 library(lubridate)
 library(purrr)
 library(fixest)
+library(kableExtra)
 library(modelsummary)
 
 # Set file paths ----------------------------------------------------------
@@ -15,6 +16,11 @@ library(modelsummary)
 ## For input files in data
 in_file <- function(filename) {
   here("data", filename)
+}
+
+## For processed files in data
+proc_file <- function(filename) {
+  here("data/proc", filename)
 }
 
 ## For output files
@@ -100,9 +106,8 @@ sink()
 message("Saved to: ", diagno)
 
 
-
-
-# 1. Extra IDs in Sales and Monthly --------------------------------------------------
+# 1. Data Cleaning --------------------------------------------------------
+# 1.1 Extra IDs in Sales and Monthly --------------------------------------------------
 # Supposedly firms, sales and monthly will have identical firm_ids.
 # But from the skim summary sales and monthly have 988 unique firm_id values, while firms has 498.
 # There are also firm ids of length 8 or 9 in sales and monthly, while in firms all ids have length 7.
@@ -149,7 +154,7 @@ setequal(unique(monthly$firm_id), unique(firms$firm_id)) # should be TRUE
 
 
 
-# 2. Resolve missing values -------------------------------------------------------
+# 1.2 Resolve missing values -------------------------------------------------------
 
 # In core files:
 # Skim summary shows missing values for sales_t.
@@ -235,7 +240,7 @@ na_prepost
 
 
 
-# 3. Check (firm_id, month) uniqueness ------------------------------------
+# 1.3 Check (firm_id, month) uniqueness ------------------------------------
 # Since sales should give firm sales by month, there should be unique firm-month values.
 # Standardise date to month to check for inconsistencies.
 
@@ -251,7 +256,7 @@ dup_keys <- monthly %>%
   filter(n > 1)
 
 
-# 4. Resolve monthly duplicates -------------------------------------------
+# 1.4 Resolve monthly duplicates -------------------------------------------
 
 # --- 1) Inspect whether duplicates are identical or conflicting ---
 conflicts <- monthly %>%
@@ -303,7 +308,7 @@ all(monthly_resolved$adopt_t %in% c(0, 1, NA))                           # adopt
 
 
 
-# 5. Adoption validity checks ---------------------------------------------
+# 1.5 Adoption validity checks ---------------------------------------------
 
 # 1) Enforce monotonicity within firm (once 1, stays 1)
 monthly_resolved <- monthly_resolved %>%
@@ -337,7 +342,7 @@ monthly_resolved %>%
 
 
 
-# 6. Build a clean analysis panel -----------------------------------------
+# 1.6 Build a clean analysis panel -----------------------------------------
 
 # 1) Keep only what we need from each table
 sales_keep   <- sales %>% select(firm_id, month, sales_t)
@@ -353,11 +358,10 @@ analysis_df <- sales_keep %>%
 # Checks
 ## Post-join row count should equal sales rows (one per firm-month)
 nrow(analysis_df) == nrow(sales_keep)
-
 skim(analysis_df)
 
-# since sales_t has a higher complete_rate than revenue_t
-# we'll use sales_t as baseline outcome measure
+# Since sales_t has a higher complete_rate than revenue_t,
+# we'll use sales_t as baseline outcome measure.
 
 # 3) Keep only firm–months with sales observed (outcome available)
 analysis_df <- analysis_df %>%
@@ -388,65 +392,310 @@ adopt_calendar <- treat_overview %>%
 adopt_calendar
 
 
-# 7. Baseline Analysis ----------------------------------------------------
-# 1) Two-way FE DiD (static effect) ---------------------------------------
-## Prepare panel
-panel <- analysis_df %>%
-  mutate(
-    ym = as.integer((year(month) - 2010) * 12 + month(month)),   # 2010-01 -> 1
-    first_treat = ifelse(is.na(first_adopt), NA_integer_,
-                         as.integer((year(first_adopt) - 2010) * 12 + month(first_adopt)))
+
+# ============================================================================
+# DATA VISUALIZATION FOR PAPER
+# ============================================================================
+
+# Create figures directory
+dir.create("output/figures", recursive = TRUE, showWarnings = FALSE)
+
+# --------------------------------------------------------------------------
+# Figure 1: Adoption Timing
+# --------------------------------------------------------------------------
+
+adoption_counts <- analysis_df %>%
+  filter(ever_adopt, !is.na(first_adopt)) %>%
+  distinct(firm_id, first_adopt) %>%
+  count(first_adopt) %>%
+  arrange(first_adopt)
+
+# Create date labels separately to avoid namespace issues
+adoption_counts$date_label <- format.Date(adoption_counts$first_adopt, "%b %Y")
+
+png("output/figures/adoption_timing.png", width = 800, height = 500, res = 120)
+par(mar = c(5, 5, 3, 2))
+barplot(
+  height = adoption_counts$n,
+  names.arg = adoption_counts$date_label,
+  las = 2,
+  col = "#4575b4",
+  border = NA,
+  main = "Distribution of Adoption Dates",
+  ylab = "Number of Firms",
+  xlab = "",
+  cex.lab = 1.2,
+  cex.axis = 1,
+  cex.main = 1.3
+)
+# Add value labels on top of bars
+text(
+  x = seq_along(adoption_counts$n) * 1.2 - 0.5,
+  y = adoption_counts$n + 5,
+  labels = adoption_counts$n,
+  cex = 1.1,
+  font = 2
+)
+dev.off()
+
+cat("Created: output/figures/adoption_timing.png\n")
+
+# --------------------------------------------------------------------------
+# Figure 2: Missingness Pattern Over Time
+# --------------------------------------------------------------------------
+
+missingness_data <- sales %>%
+  group_by(month) %>%
+  summarise(
+    pct_missing = 100 * mean(is.na(sales_t)),
+    .groups = "drop"
   )
 
-## Static DiD
-did_static <- feols(
-  sales_t ~ adopt_t | firm_id + factor(ym),
-  data = panel, cluster = ~ firm_id
+# Add vertical line date for program start
+program_start <- as.Date("2013-01-01")
+
+png("output/figures/missingness_pattern.png", width = 900, height = 500, res = 120)
+par(mar = c(5, 5, 3, 2))
+plot(
+  missingness_data$month,
+  missingness_data$pct_missing,
+  type = "l",
+  lwd = 2,
+  col = "#d73027",
+  main = "Missing Sales Data Over Time",
+  xlab = "Month",
+  ylab = "Percent Missing (%)",
+  ylim = c(0, max(missingness_data$pct_missing) * 1.2),
+  cex.lab = 1.2,
+  cex.axis = 1,
+  cex.main = 1.3
+)
+# Add horizontal line at mean
+abline(h = mean(missingness_data$pct_missing), lty = 2, col = "gray50", lwd = 1.5)
+# Add vertical line at program start
+abline(v = program_start, lty = 2, col = "#4575b4", lwd = 2)
+# Add legend
+legend(
+  "topright",
+  legend = c("Missing %", "Mean (3.7%)", "Program Start"),
+  col = c("#d73027", "gray50", "#4575b4"),
+  lty = c(1, 2, 2),
+  lwd = c(2, 1.5, 2),
+  bty = "n",
+  cex = 1
+)
+dev.off()
+
+cat("Created: output/figures/missingness_pattern.png\n")
+
+# --------------------------------------------------------------------------
+# Figure 3: Raw Sales Trends (Treated vs Control)
+# --------------------------------------------------------------------------
+
+# Calculate mean sales by month and treatment group
+trends_data <- analysis_df %>%
+  group_by(month, ever_adopt) %>%
+  summarise(
+    mean_sales = mean(sales_t, na.rm = TRUE),
+    se_sales = sd(sales_t, na.rm = TRUE) / sqrt(n()),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    group_label = ifelse(ever_adopt, "Ever Treated", "Never Treated")
+  )
+
+png("output/figures/raw_trends.png", width = 900, height = 600, res = 120)
+par(mar = c(5, 5, 3, 2))
+
+# Plot never-treated first (solid, gray)
+never_data <- trends_data %>% filter(!ever_adopt)
+plot(
+  never_data$month,
+  never_data$mean_sales,
+  type = "l",
+  lwd = 2.5,
+  lty = 1,  # Changed from 2 to 1 (solid)
+  col = "#999999",
+  main = "Raw Sales Trends: Treated vs. Control Firms",
+  xlab = "Month",
+  ylab = "Mean Sales",
+  ylim = range(trends_data$mean_sales, na.rm = TRUE),
+  cex.lab = 1.2,
+  cex.axis = 1,
+  cex.main = 1.3
 )
 
-## Log outcome robustness
-did_static_log <- feols(
-  log1p(sales_t) ~ adopt_t | firm_id + factor(ym),
-  data = panel, cluster = ~ firm_id
+# Add ever-treated (solid, blue)
+ever_data <- trends_data %>% filter(ever_adopt)
+lines(
+  ever_data$month,
+  ever_data$mean_sales,
+  lwd = 2.5,
+  col = "#4575b4"
 )
 
-# View estimates in the console
-etable(did_static, did_static_log)
+# Add vertical line at program start
+abline(v = program_start, lty = 2, col = "black", lwd = 1.5)  # Changed to dashed
 
-dir.create("output/tables", recursive = TRUE, showWarnings = FALSE)
-modelsummary(
-  list("Levels" = did_static, "Log(1+Y)" = did_static_log),
-  fmt = 3, stars = TRUE,
-  gof_map = c("nobs","r.squared.within"),
-  output = "output/tables/did_static.tex"
-)
-
-# 2) Sun-Abraham Event Study (dynamic effects) ----------------------------
-
-# Change NA to positive infinity so that feols doesn't report error
-panel <- panel %>%
-  mutate(first_treat = ifelse(is.na(first_treat), Inf, first_treat))
-
-es_sa <- feols(
-  sales_t ~ sunab(first_treat, ym, ref.p = -1) |
-    firm_id + factor(ym),
-  data = panel, cluster = ~ firm_id
-)
-
-# Plot with reference event set to -1 (one month before adoption)
-png("output/figures/es_sales_baseline.png", width = 900, height = 600)
-
-fixest::iplot(
-  es_sa,
-  ref = -1,                       # <- correct name
-  main = "Event study: sales_t",
-  xlab = "Months relative to first adoption",
-  ylab = "Effect on sales (level)"
+# Add legend
+legend(
+  "topleft",
+  legend = c("Ever Treated", "Never Treated", "Program Start (Jan 2013)"),
+  col = c("#4575b4", "#999999", "black"),
+  lty = c(1, 1, 2),  # Changed never-treated to 1 (solid), program line to 2 (dashed)
+  lwd = c(2.5, 2.5, 1.5),
+  bty = "n",
+  cex = 1.1
 )
 
 dev.off()
 
-# Aggregate an "average post-treatment" effect across lags
-post_avg <- agg(es_sa, "post")
-etable(post_avg)
-etable(post_avg, export = "output/tables/sa_post_agg.tex")
+cat("Created: output/figures/raw_trends.png\n")
+
+# --------------------------------------------------------------------------
+# Additional Data Checks for Text
+# --------------------------------------------------------------------------
+
+# Sector distribution
+sector_dist <- analysis_df %>%
+  distinct(firm_id, firm_sector, ever_adopt) %>%
+  group_by(firm_sector, ever_adopt) %>%
+  summarise(n = n(), .groups = "drop") %>%
+  pivot_wider(names_from = ever_adopt, values_from = n, values_fill = 0) %>%
+  mutate(
+    total = `FALSE` + `TRUE`,
+    pct_treated = 100 * `TRUE` / total
+  )
+
+cat("\n=== Sector Distribution ===\n")
+print(sector_dist)
+
+# Employment eligibility check
+employment_check <- analysis_df %>%
+  filter(ever_adopt & month < first_adopt) %>%
+  group_by(firm_id) %>%
+  summarise(
+    mean_emp_pre = mean(employment_t, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  summarise(
+    n_firms = n(),
+    mean_employment = mean(mean_emp_pre, na.rm = TRUE),
+    sd_employment = sd(mean_emp_pre, na.rm = TRUE),
+    n_above_100 = sum(mean_emp_pre > 100, na.rm = TRUE),
+    pct_above_100 = 100 * n_above_100 / n_firms
+  )
+
+cat("\n=== Pre-Treatment Employment (Treated Firms) ===\n")
+print(employment_check)
+
+# Never-treated employment
+never_employment <- analysis_df %>%
+  filter(!ever_adopt & month < as.Date("2013-01-01")) %>%
+  group_by(firm_id) %>%
+  summarise(
+    mean_emp_pre = mean(employment_t, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  summarise(
+    n_firms = n(),
+    mean_employment = mean(mean_emp_pre, na.rm = TRUE),
+    sd_employment = sd(mean_emp_pre, na.rm = TRUE)
+  )
+
+cat("\n=== Pre-2013 Employment (Never-Treated Firms) ===\n")
+print(never_employment)
+
+# Save statistics for reference
+write.csv(sector_dist, "output/tables/sector_distribution.csv", row.names = FALSE)
+write.csv(employment_check, "output/tables/employment_eligibility.csv", row.names = FALSE)
+
+cat("\n=== All data visualization complete ===\n")
+
+# Data output -------------------------------------------------------------
+
+## Prepare panel
+panel <- analysis_df %>%
+  mutate(
+    ym = as.integer((year(month) - 2010) * 12 + month(month)),
+    first_treat = ifelse(is.na(first_adopt), Inf,  # Use Inf for never-treated
+                         as.integer((year(first_adopt) - 2010) * 12 + month(first_adopt)))
+  )
+
+## Write panel to proc_file
+write.csv(panel, proc_file("panel.csv"), row.names = FALSE)
+
+## Write analysis_df to proc_file
+write.csv(analysis_df, proc_file("analysis_df.csv"), row.names = FALSE)
+
+# Define pre-period
+first_any_adopt <- min(panel$ym[panel$adopt_t == 1], na.rm = TRUE)
+
+# Create groups
+pre_only <- panel %>%
+  filter(ym < first_any_adopt) %>%
+  mutate(group = ifelse(first_treat == Inf, "Never-treated (pre)", "Ever-treated (pre)"))
+
+overall <- panel %>%
+  mutate(group = "Overall")
+
+# Combine data
+t1_data <- bind_rows(
+  overall %>% select(group, sales_t, employment_t, wage_bill_t, revenue_t),
+  pre_only %>% select(group, sales_t, employment_t, wage_bill_t, revenue_t)
+)
+
+# Calculate statistics
+stats_df <- t1_data %>%
+  group_by(group) %>%
+  summarise(
+    sales_mean = mean(sales_t, na.rm = TRUE),
+    sales_sd = sd(sales_t, na.rm = TRUE),
+    emp_mean = mean(employment_t, na.rm = TRUE),
+    emp_sd = sd(employment_t, na.rm = TRUE),
+    wage_mean = mean(wage_bill_t, na.rm = TRUE),
+    wage_sd = sd(wage_bill_t, na.rm = TRUE),
+    rev_mean = mean(revenue_t, na.rm = TRUE),
+    rev_sd = sd(revenue_t, na.rm = TRUE),
+    n_obs = n()
+  ) %>%
+  mutate(across(where(is.numeric), ~round(., 1)))
+
+# Transpose for cleaner table
+stats_transposed <- data.frame(
+  Variable = c("Sales", "", "Employment", "", "Wage Bill", "", "Revenue", "", "Observations"),
+  Statistic = c("Mean", "SD", "Mean", "SD", "Mean", "SD", "Mean", "SD", "N")
+)
+
+# Add columns for each group
+for (grp in unique(t1_data$group)) {
+  grp_data <- stats_df %>% filter(group == grp)
+  stats_transposed[[grp]] <- c(
+    grp_data$sales_mean,
+    grp_data$sales_sd,
+    grp_data$emp_mean,
+    grp_data$emp_sd,
+    grp_data$wage_mean,
+    grp_data$wage_sd,
+    grp_data$rev_mean,
+    grp_data$rev_sd,
+    grp_data$n_obs
+  )
+}
+
+# Create LaTeX table
+kbl(stats_transposed,
+    format = "latex",
+    booktabs = TRUE,
+    caption = "Descriptive Statistics",
+    label = "tab:descriptives",
+    col.names = c("Variable", "Statistic", names(stats_transposed)[3:ncol(stats_transposed)])) %>%
+  pack_rows("Sales", 1, 2) %>%
+  pack_rows("Employment", 3, 4) %>%
+  pack_rows("Wage Bill", 5, 6) %>%
+  pack_rows("Revenue", 7, 8) %>%
+  footnote(general = "Standard deviations shown below means.",
+           threeparttable = TRUE) %>%
+  save_kable("output/tables/table1_descriptives.tex")
+
+cat("Table saved to: output/tables/table1_descriptives.tex\n")
