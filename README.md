@@ -1,6 +1,5 @@
-This is a code task.
-
-Project Structure
+## Project Structure
+```text
 ├── data/           # Data files
 │   ├── monthly_data/                    # monthly data files
 │   └── proc/       # Cleaned data
@@ -12,3 +11,4 @@ Project Structure
 └── LaTeX           # Copy of Overleaf project and codes
 └── Small_Business_Training_Programme.pdf       # Write up
 └── README.md       # This file
+
